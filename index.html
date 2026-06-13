@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yi-Ping Chen — Digital Twins &amp; Design Optimization</title>
+<meta name="description" content="Yi-Ping Chen — Ph.D. candidate in Mechanical Engineering at Northwestern University. Research on Digital Twins, real-time decision-making, design optimization under uncertainty, and active learning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bg:#ffffff;
+    --bg-alt:#f6f5fa;
+    --surface:#ffffff;
+    --text:#1a1e24;
+    --text-2:#3b424b;
+    --muted:#697079;
+    --faint:#9aa1a9;
+    --line:#e9e8f0;
+    --line-2:#dcdae6;
+    --accent:#4E2A84;        /* Northwestern purple */
+    --accent-2:#6b3fae;
+    --accent-soft:#f1ecf9;
+    --maxw:1140px;
+    --ease:cubic-bezier(.22,.61,.36,1);
+
+    /* ---- HERO BACKGROUND ----
+       To use your own dark figure/paper image as the banner, set --hero-image
+       to url('images/YOUR_IMAGE.jpg')
+       The dark overlay below keeps the title readable on top of it. */
+    --hero-image:none;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:"Inter",system-ui,sans-serif;font-size:17px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  a{color:var(--accent);text-decoration:none;transition:color .2s}
+  a:hover{color:var(--accent-2)}
+  img{max-width:100%;display:block}
+  h1,h2,h3,h4{font-family:"Space Grotesk",sans-serif;font-weight:600;line-height:1.14;letter-spacing:-.01em;margin:0}
+  ::selection{background:var(--accent);color:#fff}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .eyebrow{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:500;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--accent)}
+
+  /* ---------- NAV ---------- */
+  header.nav{position:fixed;top:0;left:0;right:0;z-index:60;
+    transition:background .3s var(--ease),border-color .3s,box-shadow .3s;
+    border-bottom:1px solid transparent}
+  header.nav.scrolled{background:rgba(255,255,255,.9);backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);box-shadow:0 6px 24px -18px rgba(20,10,40,.4)}
+  .nav-inner{max-width:var(--maxw);margin:0 auto;padding:16px 28px;
+    display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .brand{display:flex;align-items:center;gap:11px;font-family:"Space Grotesk";
+    font-weight:600;font-size:17px;color:#fff;letter-spacing:-.01em;transition:color .3s}
+  header.nav.scrolled .brand{color:var(--text)}
+  .monogram{width:34px;height:34px;border-radius:8px;flex:0 0 auto;
+    display:grid;place-items:center;font-family:"Space Grotesk";font-weight:700;
+    font-size:14px;color:#fff;letter-spacing:.02em;
+    background:linear-gradient(135deg,var(--accent),#8b5fd0);
+    box-shadow:0 0 0 1px rgba(255,255,255,.14) inset}
+  nav.links{display:flex;gap:4px;align-items:center}
+  nav.links a{font-size:14.5px;color:rgba(255,255,255,.8);padding:8px 13px;border-radius:7px;
+    font-weight:500;letter-spacing:.01em;transition:color .25s,background .25s}
+  nav.links a:hover{color:#fff;background:rgba(255,255,255,.12)}
+  header.nav.scrolled nav.links a{color:var(--muted)}
+  header.nav.scrolled nav.links a:hover{color:var(--accent);background:var(--accent-soft)}
+  nav.links a.active{color:#fff}
+  header.nav.scrolled nav.links a.active{color:var(--accent)}
+  nav.links a.cv{color:#fff;border:1px solid rgba(255,255,255,.35);margin-left:6px}
+  nav.links a.cv:hover{border-color:#fff;background:rgba(255,255,255,.14)}
+  header.nav.scrolled nav.links a.cv{color:var(--accent);border-color:var(--line-2)}
+  header.nav.scrolled nav.links a.cv:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .burger{display:none;background:none;border:0;cursor:pointer;padding:8px;flex:0 0 auto}
+  .burger span{display:block;width:24px;height:2px;background:#fff;margin:5px 0;
+    transition:.3s var(--ease)}
+  header.nav.scrolled .burger span{background:var(--text)}
+
+  /* ---------- HERO (dark banner) ---------- */
+  .hero{position:relative;min-height:92vh;display:flex;align-items:center;
+    overflow:hidden;padding:140px 0 90px;color:#fff;
+    background:
+      radial-gradient(ellipse 78% 62% at 78% 18%, rgba(139,95,208,.4), transparent 60%),
+      linear-gradient(158deg,#1d1336 0%,#160f29 46%,#0d0a18 100%);}
+  .hero-photo{position:absolute;inset:0;z-index:0;background-image:var(--hero-image);
+    background-size:cover;background-position:center;opacity:.32;
+    mix-blend-mode:luminosity}
+  .hero-grid{position:absolute;inset:0;z-index:0;
+    background-image:radial-gradient(rgba(168,138,224,.22) 1px,transparent 1px);
+    background-size:30px 30px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 75% at 72% 32%,#000,transparent 72%);
+    mask-image:radial-gradient(ellipse 90% 75% at 72% 32%,#000,transparent 72%)}
+  .hero-glow{position:absolute;width:720px;height:720px;right:-160px;top:-200px;z-index:0;
+    background:radial-gradient(circle,rgba(120,70,190,.5),transparent 62%);filter:blur(6px)}
+  .hero .wrap{position:relative;z-index:2}
+  .hero-tag{margin-bottom:26px;color:#c9b6ee;opacity:0}
+  .hero h1{font-size:clamp(2.6rem,7vw,5.2rem);font-weight:700;color:#fff;letter-spacing:-.025em}
+  .hero h1 .dot{color:#a482e6}
+  .hero-role{font-family:"Space Grotesk";font-size:clamp(1.05rem,2.4vw,1.45rem);
+    font-weight:400;color:#ece8f5;margin-top:22px;max-width:30ch}
+  .hero-role b{font-weight:600;color:#fff}
+  .hero-sub{color:#b7b1c6;max-width:54ch;margin-top:20px;font-size:1.02rem}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:34px}
+  .chip{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;
+    color:#fff;padding:9px 16px;border-radius:30px;border:1px solid rgba(255,255,255,.28);
+    transition:.22s var(--ease)}
+  .chip:hover{border-color:#fff;background:rgba(255,255,255,.1);transform:translateY(-2px);color:#fff}
+  .chip.solid{background:#fff;border-color:#fff;color:var(--accent)}
+  .chip.solid:hover{background:#f0e9fb;color:var(--accent)}
+  .scroll-cue{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);z-index:2;
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.25em;
+    color:rgba(255,255,255,.5);text-transform:uppercase;
+    display:flex;flex-direction:column;align-items:center;gap:10px}
+  .scroll-cue .line{width:1px;height:32px;background:linear-gradient(#a482e6,transparent);
+    animation:cue 2.2s var(--ease) infinite}
+  @keyframes cue{0%,100%{opacity:.3;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
+
+  /* ---------- SECTIONS ---------- */
+  .sec{padding:104px 0;position:relative}
+  .sec.alt{background:var(--bg-alt)}
+  .sec-head{max-width:64ch;margin-bottom:54px}
+  .sec-head h2{font-size:clamp(1.9rem,4vw,2.85rem);color:var(--text);margin-top:14px}
+  .sec-head p{color:var(--muted);margin:18px 0 0;font-size:1.05rem}
+  .sec-head p b{color:var(--text-2)}
+
+  /* about */
+  .about-grid{display:grid;grid-template-columns:0.92fr 1.28fr;gap:56px;align-items:center}
+  .portrait{position:relative;max-width:380px}
+  .portrait img{width:100%;border-radius:16px;border:1px solid var(--line);
+    box-shadow:0 30px 60px -34px rgba(40,20,70,.45)}
+  .quote{font-family:"Space Grotesk";font-weight:500;font-size:clamp(1.4rem,3vw,2.05rem);
+    line-height:1.3;color:var(--text);letter-spacing:-.01em}
+  .quote .hl{color:var(--accent)}
+  .about-body{color:var(--text-2);margin-top:22px;font-size:1.04rem}
+  .about-body b{color:var(--text);font-weight:600}
+  .about-meta{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;
+    font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted)}
+  .about-meta b{color:var(--text);font-weight:500}
+
+  /* research — figure left */
+  .stream{display:grid;grid-template-columns:440px 1fr;gap:44px;align-items:center;
+    padding:42px 0;border-top:1px solid var(--line)}
+  .stream:last-child{border-bottom:1px solid var(--line)}
+  .stream-fig{background:#fff;border:1px solid var(--line);border-radius:14px;
+    aspect-ratio:16/9;display:grid;place-items:center;padding:18px;overflow:hidden;
+    box-shadow:0 18px 40px -30px rgba(40,20,70,.3)}
+  .stream-fig img{max-width:100%;max-height:100%;width:auto;height:auto}
+  .stream-body h3{font-size:1.5rem;color:var(--text);margin:0 0 14px;line-height:1.2}
+  .stream-body p{color:var(--text-2);font-size:1rem;margin:0}
+
+  /* publications — figure left, grouped by year */
+  .yr-head{font-family:"Space Grotesk";font-size:1.5rem;font-weight:700;color:var(--accent);
+    margin:46px 0 4px;padding-bottom:10px;border-bottom:2px solid var(--accent-soft)}
+  .yr-head:first-of-type{margin-top:0}
+  .pub{display:grid;grid-template-columns:260px 1fr;gap:30px;
+    padding:26px 0;border-bottom:1px solid var(--line);align-items:start}
+  .pub-thumb{width:260px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;
+    background:var(--bg-alt);border:1px solid var(--line)}
+  .pub-thumb img{width:100%;height:100%;object-fit:cover}
+  .pub h3{font-size:1.16rem;color:var(--text);line-height:1.34;font-weight:600;letter-spacing:-.005em}
+  .pub h3 a{color:var(--text)}
+  .pub h3 a:hover{color:var(--accent)}
+  .pub .authors{color:var(--muted);font-size:.95rem;margin-top:8px}
+  .pub .authors b{color:var(--text);font-weight:700}
+  .pub .venue{font-style:italic;color:var(--text-2);margin-top:4px;font-size:.95rem}
+  .pub .venue b{font-style:normal;font-weight:600;color:var(--text)}
+  .pub .badge{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
+    border-radius:6px;padding:4px 9px;margin-top:11px}
+  .pub .btns{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}
+  .pub .btns a{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.04em;
+    padding:6px 14px;border-radius:7px;border:1px solid var(--line-2);color:var(--text-2)}
+  .pub .btns a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .pub-foot{margin-top:34px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted)}
+
+  /* news */
+  .feed{max-width:860px}
+  .news{display:grid;grid-template-columns:120px 1fr;gap:22px;padding:20px 0;border-top:1px solid var(--line)}
+  .news:last-child{border-bottom:1px solid var(--line)}
+  .news .date{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--muted);padding-top:3px}
+  .news .body{color:var(--text-2);font-size:1rem}
+  .news .body .em{font-size:1.05rem;margin-right:5px}
+  .news .body b{font-weight:600;color:var(--text)}
+  .news .body small{display:block;color:var(--muted);font-size:.9rem;margin-top:3px}
+
+  /* awards */
+  .awards-grid{display:grid;grid-template-columns:1fr 1fr;gap:38px 56px}
+  .award-group h3{font-size:1.1rem;color:var(--text);margin-bottom:6px;display:flex;align-items:baseline;gap:10px}
+  .award-group h3 .ix{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--accent);font-weight:500}
+  .award-group ul{list-style:none;margin:14px 0 0;padding:0}
+  .award-group li{padding:9px 0;border-top:1px solid var(--line);color:var(--text-2);font-size:.95rem;display:flex;gap:14px}
+  .award-group li .y{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);flex:0 0 40px}
+  .award-group li b{color:var(--text);font-weight:600}
+
+  /* talks */
+  .talk{display:grid;grid-template-columns:130px 1fr;gap:24px;padding:22px 0;border-top:1px solid var(--line)}
+  .talk:last-child{border-bottom:1px solid var(--line)}
+  .talk .when{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--muted)}
+  .talk .type{display:block;color:var(--accent);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}
+  .talk h3{font-size:1.08rem;color:var(--text);font-weight:600;line-height:1.3}
+  .talk .meta{color:var(--muted);font-size:.93rem;margin-top:5px}
+  .talk .meta i{font-style:italic;color:var(--text-2)}
+
+  /* timeline */
+  .timeline{max-width:820px;border-left:2px solid var(--line);margin-left:6px}
+  .tl{position:relative;padding:0 0 38px 38px}
+  .tl:last-child{padding-bottom:0}
+  .tl::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;
+    background:#fff;border:2px solid var(--accent)}
+  .tl .when{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--accent);letter-spacing:.04em}
+  .tl h3{font-size:1.18rem;color:var(--text);margin:7px 0 2px}
+  .tl .place{color:var(--text-2);font-size:.97rem;font-weight:500}
+  .tl ul{margin:11px 0 0;padding-left:18px;color:var(--muted);font-size:.93rem}
+  .tl ul li{margin:4px 0}
+  .tl em{font-style:italic;color:var(--text-2)}
+
+  /* CTA */
+  .cta{border-radius:20px;padding:60px 56px;text-align:center;max-width:840px;margin:0 auto;
+    position:relative;overflow:hidden;color:#fff;
+    background:radial-gradient(ellipse 70% 100% at 50% 0%, rgba(139,95,208,.45), transparent 60%),
+      linear-gradient(135deg,#4E2A84,#241541)}
+  .cta h2{font-size:clamp(1.7rem,3.5vw,2.4rem);color:#fff}
+  .cta .eyebrow{color:#d3c2f0}
+  .cta p{color:#cdc4e2;max-width:48ch;margin:16px auto 0}
+  .cta .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+
+  /* CV embed */
+  .cv-frame{width:100%;height:82vh;min-height:560px;border:1px solid var(--line);
+    border-radius:14px;background:var(--bg-alt);display:block;
+    box-shadow:0 18px 50px -34px rgba(40,20,70,.4)}
+  .cv-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+  .cv-actions a{font-family:"JetBrains Mono",monospace;font-size:13px;padding:9px 18px;
+    border-radius:8px;border:1px solid var(--line-2);color:var(--text-2)}
+  .cv-actions a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .cv-actions a.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .cv-actions a.primary:hover{background:var(--accent-2);color:#fff}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:46px 0;color:var(--muted);font-size:.9rem;background:var(--bg-alt)}
+  .foot-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:18px}
+  .foot-links{display:flex;gap:20px;flex-wrap:wrap}
+  .foot-links a{color:var(--text-2);font-size:.9rem}
+  .foot-links a:hover{color:var(--accent)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .hero-tag{opacity:1}.scroll-cue .line{animation:none}
+  }
+
+  /* responsive */
+  @media (max-width:880px){
+    body{font-size:16px}
+    nav.links{position:fixed;inset:0 0 0 auto;width:min(78vw,320px);background:#fff;
+      border-left:1px solid var(--line);flex-direction:column;align-items:stretch;justify-content:flex-start;
+      padding:90px 22px 30px;gap:6px;transform:translateX(100%);transition:transform .35s var(--ease);
+      box-shadow:-20px 0 50px -30px rgba(20,10,40,.4)}
+    nav.links.open{transform:none}
+    nav.links a,header.nav nav.links a{color:var(--muted);font-size:16px;padding:13px 14px}
+    nav.links a.cv,header.nav nav.links a.cv{color:var(--accent);border-color:var(--line-2);margin:8px 0 0;text-align:center}
+    .burger{display:block;z-index:70;position:relative}
+    .burger.open span{background:var(--text)}
+    .burger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .burger.open span:nth-child(2){opacity:0}
+    .burger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .about-grid{grid-template-columns:1fr;gap:38px}
+    .stream{grid-template-columns:1fr;gap:24px}
+    .stream-fig{max-width:360px}
+    .awards-grid{grid-template-columns:1fr;gap:30px}
+    .sec{padding:78px 0}
+    .cta{padding:42px 26px}
+  }
+  @media (max-width:560px){
+    .pub{grid-template-columns:1fr;gap:14px}
+    .pub-thumb{width:100%;height:auto}
+    .news{grid-template-columns:1fr;gap:4px}
+    .talk{grid-template-columns:1fr;gap:6px}
+    .wrap,.nav-inner{padding-left:20px;padding-right:20px}
+  }
+
+  /* ---- detail / subpages ---- */
+  .subhero{position:relative;overflow:hidden;color:#fff;padding:132px 0 66px;
+    background:
+      radial-gradient(ellipse 78% 90% at 80% 8%, rgba(139,95,208,.4), transparent 60%),
+      linear-gradient(158deg,#1d1336 0%,#160f29 52%,#0d0a18 100%);}
+  .subhero .wrap{position:relative;z-index:2}
+  .crumb{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.12em;
+    text-transform:uppercase;color:#c9b6ee;margin-bottom:18px}
+  .crumb a{color:#c9b6ee}.crumb a:hover{color:#fff}
+  .subhero h1{font-size:clamp(1.8rem,4.2vw,3rem);color:#fff;max-width:26ch;letter-spacing:-.02em;line-height:1.14}
+  .subhero .meta{margin-top:18px;color:#cdc4e2;font-size:1rem;max-width:74ch;line-height:1.6}
+  .subhero .meta b{color:#fff;font-weight:700}
+  .subhero .meta .venue{font-style:italic}
+  .subhero .badge{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+    letter-spacing:.08em;text-transform:uppercase;color:#e9defb;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);border-radius:6px;padding:4px 9px;margin-top:16px}
+
+  .article{padding:66px 0 96px}
+  .article .wrap{max-width:880px}
+  .detail-fig{margin:0 0 34px;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    background:#fff;box-shadow:0 18px 50px -34px rgba(40,20,70,.3)}
+  .detail-fig img{width:100%;display:block}
+  .prose{color:var(--text-2);font-size:1.06rem;line-height:1.78}
+  .prose p{margin:0 0 18px}
+  .prose h2{font-family:"Space Grotesk";font-size:1.35rem;color:var(--text);margin:6px 0 16px;font-weight:600}
+  .kw{margin-top:24px;color:var(--muted);font-size:.95rem;line-height:1.6}
+  .kw b{color:var(--text)}
+  .detail-links{display:flex;gap:12px;flex-wrap:wrap;margin:32px 0 0}
+  .detail-links a{font-family:"JetBrains Mono",monospace;font-size:13px;padding:10px 20px;border-radius:8px;
+    border:1px solid var(--line-2);color:var(--text-2)}
+  .detail-links a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .detail-links a.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .detail-links a.primary:hover{background:var(--accent-2);color:#fff}
+  .backlink{display:inline-flex;margin-top:48px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted)}
+  .backlink:hover{color:var(--accent)}
+  .sel-head{font-family:"Space Grotesk";font-size:1.3rem;font-weight:700;color:var(--text);margin:54px 0 4px;
+    padding-bottom:10px;border-bottom:2px solid var(--accent-soft)}
+  .talk-list{list-style:none;margin:18px 0 0;padding:0}
+  .talk-list li{padding:14px 0;border-top:1px solid var(--line);color:var(--text-2);font-size:.98rem;line-height:1.5}
+  .talk-list li a{font-family:"JetBrains Mono",monospace;font-size:12px;margin-left:6px}
+
+  /* ---- clickable homepage items ---- */
+  .more{display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+    font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:500;color:var(--accent)}
+  .more:hover{gap:10px;color:var(--accent-2)}
+  .stream-body h3 a{color:var(--text)}
+  .stream-body h3 a:hover{color:var(--accent)}
+  a.stream-fig:hover{border-color:var(--accent)}
+  a.pub-thumb{display:block}
+  a.news{display:grid;grid-template-columns:120px 1fr;gap:22px;padding:20px 0;
+    border-top:1px solid var(--line);text-decoration:none;color:inherit;transition:background .2s}
+  a.news:last-of-type{border-bottom:1px solid var(--line)}
+  a.news:hover{background:var(--accent-soft)}
+  a.news:hover .body b{color:var(--accent)}
+
+</style>
+</head>
+<body>
+
+<!-- ================= NAV ================= -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#top" class="brand"><span class="monogram">YP</span>Yi-Ping&nbsp;Chen</a>
+    <button class="burger" id="burger" aria-label="Toggle menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <nav class="links" id="links">
+      <a href="#about">About</a>
+      <a href="#research">Research</a>
+      <a href="#publications">Publications</a>
+      <a href="#proceedings">Proceedings</a>
+      <a href="#news">News</a>
+      <a href="#awards">Awards</a>
+      <a href="#talks">Talks</a>
+      <a class="cv" href="#cv">CV</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <div class="hero-photo"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-grid"></div>
+  <div class="wrap">
+    <div class="eyebrow hero-tag" id="heroTag">Northwestern University · Mechanical Engineering</div>
+    <h1>Yi-Ping&nbsp;Chen<span class="dot">.</span></h1>
+    <p class="hero-role">Ph.D. candidate building <b>Digital Twins</b> that learn, decide, and adapt in real time.</p>
+    <p class="hero-sub">I develop data-driven methods for real-time decision-making and design optimization under uncertainty — bridging physics-based models and machine learning so engineering systems can sense, predict, and act on their own.</p>
+    <div class="hero-actions">
+      <a class="chip solid" href="#research">Explore research</a>
+      <a class="chip" href="mailto:chenyp@u.northwestern.edu">Email</a>
+      <a class="chip" href="https://scholar.google.com/citations?user=ZT_xI4kAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>
+      <a class="chip" href="https://orcid.org/0000-0002-9231-0860" target="_blank" rel="noopener">ORCID</a>
+      <a class="chip" href="https://github.com/yiping514" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+  <div class="scroll-cue"><span>Scroll to explore</span><span class="line"></span></div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="about" class="sec alt">
+  <div class="wrap">
+    <div class="about-grid">
+      <div class="portrait reveal">
+        <img src="images/chenyp_2.JPG" alt="Portrait of Yi-Ping Chen">
+      </div>
+      <div class="reveal">
+        <div class="eyebrow" style="margin-bottom:20px">Who I am</div>
+        <p class="quote">A <span class="hl">dad</span>, a <span class="hl">husband</span>, a <span class="hl">Christian</span>, and a researcher in design optimization and Digital Twins.</p>
+        <p class="about-body">Originally from Kaohsiung, Taiwan, I'm a Ph.D. candidate in Mechanical Engineering at <b>Northwestern University</b>, advised by <b>Dr. Wei Chen</b> in the Integrated DEsign Automation Laboratory (IDEAL), and expecting to graduate in 2026. My work uses machine learning surrogates and uncertainty quantification to enable efficient, reliable, and online-adaptable decision-making for Digital Twin systems — from additive manufacturing to active suspensions. Before my Ph.D., I spent 16 months as an R&amp;D engineer in the aerospace industry, working on data-driven correction of aircraft dynamics models.</p>
+        <div class="about-meta">
+          <span>📍 <b>Evanston, IL, USA</b></span>
+          <span>🎓 <b>Ph.D. expected 2026</b></span>
+          <span>🔬 <b>IDEAL Lab · PSED</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= RESEARCH ================= -->
+<section id="research" class="sec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Research</div>
+      <h2>Learning systems that decide under uncertainty</h2>
+      <p>My research applies data-driven methods to the core challenges of <b>Digital Twins</b> and <b>design optimization under uncertainty</b> — integrating machine learning as a surrogate for complex physics, and developing algorithms for real-time, online-adaptable decision-making. It spans two connected streams.</p>
+    </div>
+    <article class="stream reveal">
+      <a class="stream-fig" href="research/digital-twins.html"><img src="images/DT.svg" alt=""></a>
+      <div class="stream-body">
+        <h3><a href="research/digital-twins.html">Uncertainty-Aware Real-Time Decision-Making in Digital Twins</a></h3>
+        <p>Digital Twins are more than virtual replicas — they enable bi-directional interaction between a physical system and its digital counterpart. Integrating AI, uncertainty quantification, and real-time data, I develop methods for system design, performance optimization, and lifecycle management.</p>
+        <a class="more" href="research/digital-twins.html">Read more →</a>
+      </div>
+    </article>
+    <article class="stream reveal">
+      <a class="stream-fig" href="research/active-learning.html"><img src="images/MuFASa.svg" alt=""></a>
+      <div class="stream-body">
+        <h3><a href="research/active-learning.html">Active Learning for Continual Learning &amp; Sequential Decision-Making</a></h3>
+        <p>Sequential decision-making is the key to active data collection for surrogate modeling and simulation-based design. By leveraging quantified model uncertainty, I design active-learning algorithms that maximize sampling efficiency in multi-fidelity design and Digital Twins.</p>
+        <a class="more" href="research/active-learning.html">Read more →</a>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ================= PUBLICATIONS ================= -->
+<section id="publications" class="sec alt">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Publications</div>
+      <h2>Peer-reviewed journal articles</h2>
+      <p><b>Yi-Ping Chen</b> in bold. Click any paper for the abstract, figure, and links. Full list on <a href="https://scholar.google.com/citations?user=ZT_xI4kAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>.</p>
+    </div>
+    <div class="reveal">
+      <h3 class="yr-head">2026</h3>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2026-smo-dtrl.html"><img src="images/SMO_DTRL.png" alt=""></a>
+        <div>
+          <h3><a href="publications/2026-smo-dtrl.html">Reinforcement Learning-Based Control Co-Design of Digital Twin-Enabled Full-Vehicle Active Suspension Systems</a></h3>
+          <div class="authors">Tsai, Y.-K., <b>Chen, Y.-P.</b>, Karkaria, V., &amp; Chen, W.</div>
+          <div class="venue"><b>Structural and Multidisciplinary Optimization</b> (2026) 69:108</div>
+          <div class="btns"><a href="publications/2026-smo-dtrl.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2026-04-11-SMO-DTRL" target="_blank" rel="noopener">Link</a><a href="files/2026_SMO_DTRL.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2026-jms-rew.html"><img src="images/REW.png" alt=""></a>
+        <div>
+          <h3><a href="publications/2026-jms-rew.html">Adaptive Digital Twin of Sheet Metal Forming via Proper Orthogonal Decomposition-Based Koopman Operator with Model Predictive Control</a></h3>
+          <div class="authors"><b>Chen, Y.-P.</b>, Suarez, D., Tsai, Y.-K., Karkaria, V., Chen, Z., Hu, G., Guo, P., Cao, J., &amp; Chen, W.</div>
+          <div class="venue"><b>Journal of Manufacturing Systems</b> 86C: 762–773</div>
+          <div class="btns"><a href="publications/2026-jms-rew.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2026-04-07-JMS-REW" target="_blank" rel="noopener">Link</a><a href="files/2026_JMS_REW.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2026-roadmap.html"><img src="images/roadmap.png" alt=""></a>
+        <div>
+          <h3><a href="publications/2026-roadmap.html">2026 Roadmap on Artificial Intelligence and Machine Learning for Smart Manufacturing</a></h3>
+          <div class="authors">Lee, J., <b>Chen, Y.-P.</b>, <i>et al.</i> (multi-institution roadmap)</div>
+          <div class="venue"><b>Machine Learning: Engineering</b> · DOI: 10.1088/3049-4761/ae5967</div>
+          <div class="btns"><a href="publications/2026-roadmap.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2026-03-21-2026roadmap" target="_blank" rel="noopener">Link</a><a href="files/2026_roadmap.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2026-jmd-arcobo.html"><img src="images/JMD_ARCOBO.png" alt=""></a>
+        <div>
+          <h3><a href="publications/2026-jmd-arcobo.html">ARCO-BO: Adaptive Resource-aware Collaborative Bayesian Optimization for Heterogeneous Multi-Agent Design</a></h3>
+          <div class="authors">Wang, Z., <b>Chen, Y.-P.</b>, Dolar, T., &amp; Chen, W.</div>
+          <div class="venue"><b>Journal of Mechanical Design</b> 148 (2026): 091703</div>
+          <div class="btns"><a href="publications/2026-jmd-arcobo.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2026-03-09-JMD-ARCOBO" target="_blank" rel="noopener">Link</a><a href="files/2026_JMD_ARCOBO.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2026-jmd-rmpc.html"><img src="images/JMD_RMPC.jpg" alt=""></a>
+        <div>
+          <h3><a href="publications/2026-jmd-rmpc.html">Uncertainty-Aware Digital Twins: Robust Model Predictive Control Using Time-Series Deep Quantile Learning</a></h3>
+          <div class="authors"><b>Chen, Y.-P.</b>, Tsai, Y.-K., Karkaria, V., &amp; Chen, W.</div>
+          <div class="venue"><b>ASME Journal of Mechanical Design</b>, Special Issue: Data-Driven Design under Uncertainty, 148(2): 021702</div>
+          <div class="btns"><a href="publications/2026-jmd-rmpc.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2025-08-05-JMD-RMPC" target="_blank" rel="noopener">Link</a><a href="files/2025_JMD_RMPC.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <h3 class="yr-head">2025</h3>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2025-mlst-asno.html"><img src="images/MLST_ASNO.png" alt=""></a>
+        <div>
+          <h3><a href="publications/2025-mlst-asno.html">An Attention-Based Spatio-Temporal Neural Operator for Evolving Physics</a></h3>
+          <div class="authors">Karkaria, V., Lee, D., <b>Chen, Y.-P.</b>, Yu, Y., &amp; Chen, W.</div>
+          <div class="venue"><b>IOP Machine Learning: Science and Technology</b> 6 (2025): 045036</div>
+          <div class="btns"><a href="publications/2025-mlst-asno.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2025-10-25-MLST-ASNO" target="_blank" rel="noopener">Link</a><a href="files/2025_MLST_ASNO.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2025-jms-mpc-ded.html"><img src="images/JMS_MPC_DED.jpg" alt=""></a>
+        <div>
+          <h3><a href="publications/2025-jms-mpc-ded.html">Real-Time Decision-Making for Digital Twin in Additive Manufacturing with Model Predictive Control using Time-Series Deep Neural Networks</a></h3>
+          <div class="authors"><b>Chen, Y.-P.</b>, Karkaria, V., Tsai, Y.-K., Rolark, F., Quispe, D., Gao, R. X., Cao, J., &amp; Chen, W.</div>
+          <div class="venue"><b>Journal of Manufacturing Systems</b> 80 (2025): 412–424</div>
+          <div class="badge">🏆 NAMRC 53 Outstanding Paper Award</div>
+          <div class="btns"><a href="publications/2025-jms-mpc-ded.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2025-03-29-JMS-MPC_DED" target="_blank" rel="noopener">Link</a><a href="files/2025_JMS_MPC_DED.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2025-eo-dt-review.html"><img src="images/EO_DT_review.png" alt=""></a>
+        <div>
+          <h3><a href="publications/2025-eo-dt-review.html">An Optimization-Centric Review on Integrating Artificial Intelligence and Digital Twin Technologies in Manufacturing</a></h3>
+          <div class="authors">Karkaria, V., Tsai, Y.-K., <b>Chen, Y.-P.</b>, &amp; Chen, W.</div>
+          <div class="venue"><b>Engineering Optimization</b> (2025) 1–47</div>
+          <div class="btns"><a href="publications/2025-eo-dt-review.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2025-01-02-EO-DT_review" target="_blank" rel="noopener">Link</a><a href="files/2025-01-02-EO-DT_AI_review.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <h3 class="yr-head">2024</h3>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2024-cmame-mufasa.html"><img src="images/CMAME_mufasa.png" alt=""></a>
+        <div>
+          <h3><a href="publications/2024-cmame-mufasa.html">A Latent Variable Approach for Non-Hierarchical Multi-Fidelity Adaptive Sampling</a></h3>
+          <div class="authors"><b>Chen, Y.-P.</b>, Wang, L., Comlek, Y., &amp; Chen, W.</div>
+          <div class="venue"><b>Computer Methods in Applied Mechanics and Engineering</b> 421 (2024): 116773</div>
+          <div class="btns"><a href="publications/2024-cmame-mufasa.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2024-01-10-CMAME-mufasa-2" target="_blank" rel="noopener">Link</a><a href="files/2024_CMAME_mufasa.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <h3 class="yr-head">2021</h3>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2021-jmd-param.html"><img src="images/method_flow_chart.png" alt=""></a>
+        <div>
+          <h3><a href="publications/2021-jmd-param.html">Unknown Parameter Excitation and Estimation for Complex Systems With Dynamic Performances</a></h3>
+          <div class="authors"><b>Chen, Y.-P.</b> &amp; Chan, K.-Y.</div>
+          <div class="venue"><b>Journal of Mechanical Design</b> 143(9) (2021): 091704</div>
+          <div class="btns"><a href="publications/2021-jmd-param.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications/2021-09-01-unknown_parameter_excitation-1" target="_blank" rel="noopener">Link</a><a href="files/2021_JMD_param_excitation.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <p class="pub-foot">Conference talks &amp; presentations are listed in the <a href="#talks">Talks</a> section below.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONFERENCE PROCEEDINGS ================= -->
+<section id="proceedings" class="sec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Proceedings</div>
+      <h2>Conference proceedings</h2>
+      <p>Peer-reviewed full papers presented at conferences. Click any paper for details. <b>Yi-Ping Chen</b> in bold.</p>
+    </div>
+    <div class="reveal">
+      <h3 class="yr-head">2025</h3>
+      <div class="pub">
+        <a class="pub-thumb" href="proceedings/2025-namrc-vr.html"><img src="images/DigitalTwinScreenshot.png" alt=""></a>
+        <div>
+          <h3><a href="proceedings/2025-namrc-vr.html">A Real-Time VR-Enabled Digital Twin Framework for Multi-User Interaction in Industry 4.0</a></h3>
+          <div class="authors">Dewberry, N. K., AlHmoud, I., Benton, K., Suarez, D., <b>Chen, Y.-P.</b>, Karkaria, V., Tsai, Y.-K., Brock, M., Alazzawi, N., Chowdhury, S., Chen, W., Cao, J., &amp; Gokaraju, B.</div>
+          <div class="venue"><b>Manufacturing Letters</b> (NAMRC 53) 44 (2025): 1486–1497</div>
+          <div class="btns"><a href="proceedings/2025-namrc-vr.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications_conf_full/20225-06-25-NAMRC-VR" target="_blank" rel="noopener">Link</a><a href="files/2025_NAMRC_DT_VR.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+      <h3 class="yr-head">2020</h3>
+      <div class="pub">
+        <a class="pub-thumb" href="proceedings/2020-idetc-excitation.html"><img src="images/2020_IDETC_param_excite.png" alt=""></a>
+        <div>
+          <h3><a href="proceedings/2020-idetc-excitation.html">Designing Excitation Maneuvers with Maximal Parameter Sensitivity for an X-by-Wire Autonomous Tricycle</a></h3>
+          <div class="authors"><b>Chen, Y.-P.</b> &amp; Chan, K.-Y.</div>
+          <div class="venue"><b>ASME IDETC-CIE</b>, Vol. 84010 (2020)</div>
+          <div class="btns"><a href="proceedings/2020-idetc-excitation.html">Read more</a><a href="https://yiping514.github.io/chenyp.github.io/publications_conf_full/2020-08-16-param_excitation" target="_blank" rel="noopener">Link</a><a href="files/2020_IDETC_param_excitation.pdf" target="_blank" rel="noopener">PDF</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= NEWS ================= -->
+<section id="news" class="sec alt">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">News</div><h2>Recent updates</h2></div>
+    <div class="feed reveal">
+      <a class="news" href="news/phd-defense.html"><div class="date">04 / 22 / 2026</div><div class="body"><span class="em">🎓</span><b>Defended my Ph.D. dissertation</b>, "Continuous Learning and Decision-Making for the Digital Twin of Engineering Systems."</div></a>
+      <a class="news" href="news/hackathon-first-place.html"><div class="date">08 / 16 / 2025</div><div class="body"><span class="em">🏆</span><b>1st place</b> with Gourav Kumbhojkar at the 2025 ASME IDETC-CIE Student Hackathon (nTop problem) — judged on surrogate accuracy, inverse-design quality, and presentation.</div></a>
+      <a class="news" href="news/dac-paper-distinction.html"><div class="date">08 / 16 / 2025</div><div class="body"><span class="em">📄</span>Co-authored paper (Tsai <i>et al.</i>, "Multi-Generation Control Co-Design for Digital Twin-Enabled Systems with Deep RL") selected as a <b>Paper of Distinction</b> — one of 10 from 108 submissions.</div></a>
+      <a class="news" href="news/kellogg-mfp.html"><div class="date">08 / 05 / 2025</div><div class="body"><span class="em">🎓</span>Completed the <b>Management for Ph.D. Certificate</b> from Northwestern's Graduate School &amp; Kellogg School of Management.</div></a>
+      <a class="news" href="news/namrc-outstanding-paper.html"><div class="date">06 / 26 / 2025</div><div class="body"><span class="em">🏆</span>First-authored paper won the <b>Outstanding Paper Award in Manufacturing Systems</b> at NAMRC 53 — the only paper selected among ~270 submissions.</div></a>
+      <a class="news" href="news/mentorship-award.html"><div class="date">06 / 06 / 2025</div><div class="body"><span class="em">🏅</span>Received the <b>Mentorship Award</b> from Northwestern's Department of Mechanical Engineering.</div></a>
+      <a class="news" href="news/martin-fellowship.html"><div class="date">05 / 27 / 2025</div><div class="body"><span class="em">🎖️</span>Selected as one of four recipients of the <b>Martin Outstanding Doctoral Fellowship</b>, Department of Mechanical Engineering.</div></a>
+      <a class="news" href="news/namrc-fast-track.html"><div class="date">03 / 10 / 2025</div><div class="body"><span class="em">📑</span>NAMRC 53 paper recommended for <b>fast-tracking to the Journal of Manufacturing Systems</b>.</div></a>
+      <a class="news" href="news/engisphere-feature.html"><div class="date">02 / 05 / 2025</div><div class="body"><span class="em">📰</span>Work on real-time Digital Twins for additive manufacturing <b>featured by EngiSphere</b> for a general audience.</div></a>
+      <a class="news" href="news/proposal-exam.html"><div class="date">11 / 25 / 2024</div><div class="body"><span class="em">✅</span>Passed my <b>Dissertation Proposal Exam</b>.</div></a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AWARDS ================= -->
+<section id="awards" class="sec">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">Honors</div><h2>Awards &amp; achievements</h2></div>
+    <div class="awards-grid reveal">
+      <div class="award-group">
+        <h3><span class="ix">01</span> Research &amp; Best Paper</h3>
+        <ul>
+          <li><span class="y">2025</span><span>Paper of Distinction, <b>Design Automation Conference</b> (IDETC-CIE)</span></li>
+          <li><span class="y">2025</span><span>Outstanding Paper Award in Manufacturing Systems, <b>NAMRC 53</b></span></li>
+          <li><span class="y">2021</span><span>HIWIN Master's Thesis Award (Honorable Mention) — Taiwan's top M.E. thesis award</span></li>
+          <li><span class="y">2020</span><span>Best Paper Award, <b>MATLAB Research Competition</b>, MathWorks</span></li>
+          <li><span class="y">2020</span><span>1st Place, Master Thesis Award, <b>CSME</b></span></li>
+          <li><span class="y">2020</span><span>Dean's Award for Outstanding Master Thesis, NTU (top 5%)</span></li>
+        </ul>
+      </div>
+      <div class="award-group">
+        <h3><span class="ix">02</span> Fellowships &amp; Merit</h3>
+        <ul>
+          <li><span class="y">2025</span><span><b>Martin Outstanding Doctoral Fellowship</b>, ME, Northwestern</span></li>
+          <li><span class="y">2023</span><span>PSED Fellow, The Graduate School, Northwestern</span></li>
+          <li><span class="y">2022</span><span>Taiwan–Northwestern Scholarship, Ministry of Education (4-yr)</span></li>
+          <li><span class="y">2022</span><span>Walter P. Murphy Scholarship, The Graduate School</span></li>
+          <li><span class="y">2023</span><span>Leon M. Keer and Family Fellowship, ME, Northwestern</span></li>
+        </ul>
+      </div>
+      <div class="award-group">
+        <h3><span class="ix">03</span> Service &amp; Mentorship</h3>
+        <ul>
+          <li><span class="y">2025</span><span><b>Mentorship Award</b>, ME, Northwestern</span></li>
+          <li><span class="y">2020</span><span>Outstanding TA, NTU</span></li>
+          <li><span class="y">2017</span><span>Young College Elite, Youth Corps of ROC (Tainan representative)</span></li>
+        </ul>
+      </div>
+      <div class="award-group">
+        <h3><span class="ix">04</span> Academics &amp; Competitions</h3>
+        <ul>
+          <li><span class="y">2025</span><span>1st Place, <b>ASME IDETC-CIE Student Hackathon</b></span></li>
+          <li><span class="y">2018</span><span><b>Phi Tau Phi Honor</b>, NCKU (top 1%)</span></li>
+          <li><span class="y">'15–'18</span><span>Dean's List (×3), NCKU (top 10%)</span></li>
+          <li><span class="y">2018</span><span>Nat'l EV Innovation Competition: 2nd Racing, 3rd Technical Report</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TALKS ================= -->
+<section id="talks" class="sec alt">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">Talks</div><h2>Invited &amp; conference presentations</h2></div>
+    <div class="reveal">
+      <div class="talk"><div class="when">Jun 2026<span class="type">Webinar Keynote</span></div><div><h3>Real-Time Decision-Making for Digital Twin in Additive Manufacturing with Model Predictive Control</h3><div class="meta"><i>SME Manufacturing Edge Webinar Series</i> · Virtual</div></div></div>
+      <div class="talk"><div class="when">Jul 2025<span class="type">Conference</span></div><div><h3>Uncertainty-Aware Digital Twin: A Simultaneous Multistep Robust MPC for Additive Manufacturing</h3><div class="meta"><i>18th US National Congress on Computational Mechanics (USNCCM)</i> · Chicago, IL</div></div></div>
+      <div class="talk"><div class="when">Jun 2025<span class="type">Conference</span></div><div><h3>Real-Time Decision-Making for Digital Twin in AM with MPC using Time-Series Deep Neural Networks</h3><div class="meta"><i>North American Manufacturing Research Conference (NAMRC 53)</i> · Greenville, SC</div></div></div>
+      <div class="talk"><div class="when">Oct 2023<span class="type">Conference</span></div><div><h3>A Unified Adaptive Sampling Framework for Multi-Fidelity Modeling and Bayesian Optimization via Latent Variable Gaussian Process</h3><div class="meta"><i>Society of Engineering Science (SES) Annual Technical Meeting</i> · Minnesota</div></div></div>
+      <div class="talk"><div class="when">Sep 2023<span class="type">Conference</span></div><div><h3>Data Fusion of Multi-Fidelity Systems via Latent Variable Gaussian Process for Active Learning</h3><div class="meta"><i>2nd IACM MMLDE-CSET</i> · El Paso, TX</div></div></div>
+      <div class="talk"><div class="when">Oct 2020<span class="type">Keynote Seminar</span></div><div><h3>Optimal Uncertain Parameter Excitation and Estimation: A Case Study on Vehicle Model Development</h3><div class="meta"><i>MATLAB Expo 2020</i> · Taiwan · Virtual</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EDUCATION & EXPERIENCE ================= -->
+<section id="edu" class="sec">
+  <div class="wrap">
+    <div class="sec-head reveal"><div class="eyebrow">Education &amp; Experience</div><h2>Path so far</h2></div>
+    <div class="timeline reveal">
+      <div class="tl">
+        <div class="when">Sep 2022 — Jun 2026</div>
+        <h3>Ph.D. in Mechanical Engineering</h3>
+        <div class="place">Northwestern University · Evanston, IL</div>
+        <ul>
+          <li>Advisor: Dr. Wei Chen · Doctoral Cluster in Predictive Science &amp; Engineering Design (PSED)</li>
+          <li>Kellogg Certificate Program — Management for Ph.D.</li>
+          <li>Dissertation: <em>Continuous Learning and Decision-Making for the Digital Twin of Engineering Systems</em></li>
+        </ul>
+      </div>
+      <div class="tl">
+        <div class="when">2020 — 2022</div>
+        <h3>R&amp;D Engineer, Aeronautical Research Laboratory</h3>
+        <div class="place">National Chung-Shan Institute of Science and Technology (NCSIST) · Taiwan</div>
+        <ul><li>Flight Control Group — maintained the 6-DoF aircraft dynamics model and addressed model discrepancy with data-driven methods for next-generation fighter development.</li></ul>
+      </div>
+      <div class="tl">
+        <div class="when">Sep 2018 — Aug 2020</div>
+        <h3>M.S. in Mechanical Engineering</h3>
+        <div class="place">National Taiwan University (NTU) · Taipei, Taiwan</div>
+        <ul>
+          <li>Advisor: Dr. Kuei-Yuan Chan · System Optimization Laboratory (SOLAB)</li>
+          <li>GPA 4.18/4.3 · graduate ranking 2/41 in the Design subgroup</li>
+          <li>Thesis: <em>Uncertain Parameter Excitation and Estimation — A Case Study on Vehicle Model Development</em></li>
+        </ul>
+      </div>
+      <div class="tl">
+        <div class="when">Sep 2014 — Aug 2018</div>
+        <h3>B.S. in Mechanical Engineering</h3>
+        <div class="place">National Cheng Kung University (NCKU) · Tainan, Taiwan</div>
+        <ul>
+          <li>Graduated with <em>Phi Tau Phi</em> Honor (top 1% of the College of Engineering)</li>
+          <li>GPA 3.96/4 · ranking 2/198 in the Class of 2018 · Dean's List ×3</li>
+          <li>Undergraduate advisor: Dr. Hong-Sen Yan</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CV (embedded PDF) ================= -->
+<section id="cv" class="sec alt">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Curriculum Vitae</div>
+      <h2>CV</h2>
+      <p>My full CV is embedded below. You can also download it or open it in a new tab.</p>
+    </div>
+    <div class="reveal">
+      <object class="cv-frame" data="files/CV_chenyp.pdf#view=FitH" type="application/pdf">
+        <iframe class="cv-frame" src="files/CV_chenyp.pdf#view=FitH" title="Yi-Ping Chen — Curriculum Vitae"></iframe>
+      </object>
+      <div class="cv-actions">
+        <a class="primary" href="files/CV_chenyp.pdf" download>Download PDF ↓</a>
+        <a href="files/CV_chenyp.pdf" target="_blank" rel="noopener">Open in new tab ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT / CTA ================= -->
+<section id="contact" class="sec">
+  <div class="wrap">
+    <div class="cta reveal">
+      <div class="eyebrow">Get in touch</div>
+      <h2 style="margin-top:14px">Let's build intelligent systems together</h2>
+      <p>I'm on the academic job market and always glad to talk research, collaboration, or mentoring. Reach out any time.</p>
+      <div class="row">
+        <a class="chip solid" href="mailto:chenyp@u.northwestern.edu">chenyp@u.northwestern.edu</a>
+        <a class="chip" href="files/CV_chenyp.pdf" target="_blank" rel="noopener">Download CV ↗</a>
+        <a class="chip" href="https://www.researchgate.net/profile/Yi-Ping-Chen-2/research" target="_blank" rel="noopener">ResearchGate</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="wrap foot-inner">
+    <div>© <span id="yr"></span> Yi-Ping Chen · Evanston, IL</div>
+    <div class="foot-links">
+      <a href="https://scholar.google.com/citations?user=ZT_xI4kAAAAJ&hl=en" target="_blank" rel="noopener">Scholar</a>
+      <a href="https://orcid.org/0000-0002-9231-0860" target="_blank" rel="noopener">ORCID</a>
+      <a href="https://github.com/yiping514" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.researchgate.net/profile/Yi-Ping-Chen-2/research" target="_blank" rel="noopener">ResearchGate</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  const nav = document.getElementById('nav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 40);
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+  const burger = document.getElementById('burger'), links = document.getElementById('links');
+  burger.addEventListener('click', () => {
+    const open = links.classList.toggle('open');
+    burger.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open);
+  });
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    links.classList.remove('open'); burger.classList.remove('open'); burger.setAttribute('aria-expanded', false);
+  }));
+
+  window.addEventListener('load', () => {
+    const t = document.getElementById('heroTag');
+    t.style.transition = 'opacity .9s ease .15s'; t.style.opacity = 1;
+  });
+
+  const io = new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  const navLinks=[...document.querySelectorAll('nav.links a[href^="#"]')];
+  const spy=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){navLinks.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id));}});},{rootMargin:'-45% 0px -50% 0px'});
+  document.querySelectorAll('section[id]').forEach(s=>spy.observe(s));
+</script>
+</body>
+</html>

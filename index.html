@@ -175,9 +175,10 @@
     letter-spacing:.08em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);
     border-radius:6px;padding:4px 9px;margin-top:11px}
   .pub .btns{display:flex;gap:9px;margin-top:13px;flex-wrap:wrap}
-  .pub .btns a{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.04em;
+  .pub .btns a,.pub .btns button{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.04em;
     padding:6px 14px;border-radius:7px;border:1px solid var(--line-2);color:var(--text-2)}
   .pub .btns a:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .pub .btns button:disabled{background:transparent;opacity:.55;cursor:default}
   .pub-foot{margin-top:34px;font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--muted)}
 
   /* news */
@@ -512,6 +513,15 @@
     </div>
     <div class="reveal">
       <h3 class="yr-head">2026</h3>
+      <div class="pub">
+        <a class="pub-thumb" href="publications/2026-mleng-dpc.html"><img src="images/ml_eng_dpc.png" alt="Differentiable Predictive Control framework for additive manufacturing"></a>
+        <div>
+          <h3><a href="publications/2026-mleng-dpc.html">Policy learning for real-time control of digital twins in additive manufacturing via Differentiable Predictive Control using multi-step time-series deep neural networks</a></h3>
+          <div class="authors">Lee, S., <b>Chen, Y.-P.</b>, Tsai, Y.-K., Karkaria, V., &amp; Chen, W.</div>
+          <div class="venue"><b>Machine Learning: Engineering</b> (2026) · DOI: 10.1088/3049-4761/aec0a2</div>
+          <div class="btns"><a href="publications/2026-mleng-dpc.html">Read more</a><a href="https://iopscience.iop.org/article/10.1088/3049-4761/aec0a2" target="_blank" rel="noopener">Link</a><button type="button" disabled title="PDF coming soon">PDF</button></div>
+        </div>
+      </div>
       <div class="pub">
         <a class="pub-thumb" href="https://asmedigitalcollection.asme.org/mechanicaldesign/article/doi/10.1115/1.4072056/1233317/Digital-Twin-enabled-Multi-generation-Control-Co?guestAccessKey=" target="_blank" rel="noopener"><img src="images/PPO_CCD.png" alt=""></a>
         <div>
